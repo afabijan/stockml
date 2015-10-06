@@ -69,8 +69,17 @@ def Key_Stats(gather = "Total Debt/Equity (mrq)"):
                             stock_price = re.search(r'(\d{1,8}\.\d{1,8})',stock_price)
                             stock_price = float(stock_price.group(1))
                         except Exception as ex:
-                            print "hit exception :(", e
-                            pass
+                            try:
+
+                                # <span class="time_rtq_ticker"><span id="yfs_l84_apd">91.59</span></span>
+                                stock_price = source.split('<span class="time_rtq_ticker">')[1].split('</span>')[0]
+                                stock_price = re.search(r'(\d{1,8}\.\d{1,8})',stock_price)
+                                stock_price = float(stock_price.group(1))
+                                print stock_price
+                            except Exception as ex2: #we don't get any more exceptions in the dataset
+                                pass
+                                #print stock_price, str(ex2),file
+
 
                         # print e,  stock_price
                         #print ticker, e, file
