@@ -23,7 +23,8 @@ def Key_Stats(gather = "Total Debt/Equity (mrq)"):
                                  'stock_p_change',
                                  'SP500',
                                  'sp500_p_change',
-                                 'Difference']
+                                 'Difference',
+                                 'Status']
                                  )
 
     sp500_df = pd.DataFrame.from_csv('YAHOO-INDEX_GSPC.csv')
@@ -97,7 +98,13 @@ def Key_Stats(gather = "Total Debt/Equity (mrq)"):
                     sp500_p_change = ((sp500_value - starting_sp500_value) /starting_sp500_value) *100
 
                     # compare the change
-                    stock_p_change - sp500_p_change
+                    difference = stock_p_change - sp500_p_change
+
+                    # a status var for performing / underperforming
+                    if difference > 0:
+                        status = "outperform"
+                    else:
+                        status = "underperform"
 
 
                     # append to dict
@@ -109,7 +116,8 @@ def Key_Stats(gather = "Total Debt/Equity (mrq)"):
                                     'stock_p_change': stock_p_change,
                                     'SP500': sp500_value,
                                     'sp500_p_change': sp500_p_change,
-                                    'Difference': stock_p_change - sp500_p_change
+                                    'Difference': difference,
+                                    'Status': status
                                     }, ignore_index=True)
 
                 except Exception as e:
@@ -122,7 +130,13 @@ def Key_Stats(gather = "Total Debt/Equity (mrq)"):
             plot_df = df[(df['Ticker'] == each_ticker)]
             plot_df = plot_df.set_index(['Date'])
 
-            plot_df['Difference'].plot(label=each_ticker)
+            if plot_df['Status'][-1] == "underperform":
+                color = 'r'
+            else:
+                color = 'g'
+
+            plot_df['Difference'].plot(label=each_ticker, color=color)
+
             plt.legend()
 
 
@@ -131,6 +145,8 @@ def Key_Stats(gather = "Total Debt/Equity (mrq)"):
 
 
     plt.show()
+
+    #Save to a CSV file
     save = gather.replace(' ', '').replace('(', '').replace(')', '').replace('/', '')+'.csv'
     #print(save)
     df.to_csv(save)
